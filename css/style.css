@@ -1,0 +1,24 @@
+.js-pass {
+  font-size: 16px;
+}
+
+.js-pass .bi.bi-eye-fill {
+  display: none;
+}
+
+.js-pass.showPassword .bi.bi-eye-slash-fill {
+  display: none;
+}
+
+.js-pass.showPassword .bi.bi-eye-fill {
+  display: block;
+}
+
+body {
+  min-height: 100vh;
+}
+
+body header .bi.bi-person-square {
+  font-size: 24px;
+}
+/*# sourceMappingURL=style.css.map */

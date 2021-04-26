@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+    mysql5.7:
+        image: mysql:5.7
+        container_name: mydevice_mysql5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./app/db:/var/lib/mysql
+        ports:
+            - '3306:3306'
+
+    php8.0:
+        image: php:lastest
+        container_name: mydevice_php8.0
+        working_dir: .
+        volumes:
+            - .:/www
