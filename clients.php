@@ -3,6 +3,11 @@
 if ($_SESSION['user'] == '')
     header('Location: /');
 ?>
+
+<?php
+include 'functions.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -60,7 +65,7 @@ if ($_SESSION['user'] == '')
         <main>
             <div class="container">
                 <div class="d-flex justify-content-between mb-3">
-                    <div class="col-4 offset-8">
+                    <!-- <div class="col-4 offset-8">
                         <div class="input-group">
                             <input
                                 type="text"
@@ -72,7 +77,7 @@ if ($_SESSION['user'] == '')
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <table class="w-100 table table-bordered">
                     <tr class="text-center">
@@ -80,20 +85,26 @@ if ($_SESSION['user'] == '')
                         <th class="py-2 bg-light text-dark">ФИО</th>
                         <th class="py-2 bg-light text-dark">Телефон</th>
                     </tr>
+                    <?php
+                        $clients = new Client();
+                        $result = $clients->get()['msg'];
+                    ?>
+                    <?php while($row = $result->fetch_assoc()):?>
                     <tr class="text-center">
                         <td class="align-middle">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#clientModal">1</a>
+                            <a href="#" class="js-openClientModal" data-bs-toggle="modal" data-bs-target="#clientModal" data-client-id="<?=$row['id']?>"><?=$row['id']?></a>
                         </td>
-                        <td class="align-middle">Чащин Николай</td>
-                        <td class="align-middle">+7 (999) 123 45 56</td>
+                        <td class="align-middle"><?=$row['fullName']?></td>
+                        <td class="align-middle"><?=$row['phone']?></td>
                     </tr>
+                    <?php endwhile; ?>
                 </table>
             </div>
         </main>
 
         <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
+                <form class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="clientModalLabel">Информация о клиенте</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -101,31 +112,32 @@ if ($_SESSION['user'] == '')
                     <div class="modal-body">
                         <div class="row mb-3">
                             <div class="col-4">
-                                <label for="executerFullName" class="form-label">ФИО клиента</label>
+                                <label for="clientFullName" class="form-label">ФИО клиента</label>
                                 <input
                                     class="form-control"
-                                    id="executerFullName"
+                                    id="clientFullName"
+                                    name="clientFullName"
                                     placeholder="Иванов Иван Иванович"
-                                    value="Никулина Ирина"
                                 />
                             </div>
                             <div class="col-4">
-                                <label for="executerPhone" class="form-label">Номер телефона</label>
+                                <label for="clientPhone" class="form-label">Номер телефона</label>
                                 <input
                                     class="form-control js-phone"
-                                    id="executerPhone"
+                                    id="clientPhone"
+                                    name="clientPhone"
                                     placeholder="+7 (999) 876 54 32"
-                                    value="+7 (999) 876 54 32"
                                 />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="executorDesc" class="form-label">Дополнительно</label>
+                                <label for="clientDesc" class="form-label">Дополнительно</label>
                                 <textarea
                                     class="form-control"
+                                    id="clientDesc"
+                                    name="clientDesc"
                                     placeholder="Любит брокколи"
-                                    id="executorWorkDesc"
                                 ></textarea>
                             </div>
                         </div>
@@ -135,12 +147,12 @@ if ($_SESSION['user'] == '')
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link active"
-                                            id="home-tab"
+                                            id="clientDevices-tab"
                                             data-bs-toggle="tab"
-                                            data-bs-target="#home"
+                                            data-bs-target="#clientDevices"
                                             type="button"
                                             role="tab"
-                                            aria-controls="home"
+                                            aria-controls="clientDevices"
                                             aria-selected="true"
                                         >
                                             Устройства
@@ -149,24 +161,24 @@ if ($_SESSION['user'] == '')
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link"
-                                            id="profile-tab"
+                                            id="clientOrders-tab"
                                             data-bs-toggle="tab"
-                                            data-bs-target="#profile"
+                                            data-bs-target="#clientOrders"
                                             type="button"
                                             role="tab"
-                                            aria-controls="profile"
+                                            aria-controls="clientOrders"
                                             aria-selected="false"
                                         >
                                             Заказы
                                         </button>
                                     </li>
                                 </ul>
-                                <div class="tab-content" id="myTabContent">
+                                <div class="tab-content">
                                     <div
                                         class="tab-pane fade show pt-3 active"
-                                        id="home"
+                                        id="clientDevices"
                                         role="tabpanel"
-                                        aria-labelledby="home-tab"
+                                        aria-labelledby="clientDevices-tab"
                                     >
                                         <table class="table table-bordered">
                                             <tr class="text-center">
@@ -181,9 +193,9 @@ if ($_SESSION['user'] == '')
                                     </div>
                                     <div
                                         class="tab-pane fade pt-3"
-                                        id="profile"
+                                        id="clientOrders"
                                         role="tabpanel"
-                                        aria-labelledby="profile-tab"
+                                        aria-labelledby="clientOrders-tab"
                                     >
                                         <table class="table table-bordered">
                                             <tr class="text-center">
@@ -241,9 +253,9 @@ if ($_SESSION['user'] == '')
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Сохранить</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="js-clientBtn">Сохранить</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </body>

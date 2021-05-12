@@ -104,6 +104,8 @@ class DB {
 
         $sql = 'INSERT INTO '.$table.' ('.implode(', ', $fields).') VALUES ('.implode(', ', $data).')';
 
+        // echo $sql;
+
         if ($conn->query($sql))
             return $conn->insert_id;
         else
@@ -202,11 +204,15 @@ class Order extends DB {
             ];
     }
 
-    public function get($orderID = '') {
-        if ($orderID == '')
+    public function get($orderID = '', $where = []) {
+        if ($orderID == '' && count($where) == 0)
             $result = $this->select('orders');
-        else
+        
+        if ($orderID != '' && count($where) == 0)
             $result = $this->select('orders', ['*'], ['id' => $orderID]);
+
+        if ($orderID == '' && count($where) > 0)
+            $result = $this->select('orders', ['*'], $where);
 
         if ($result)
             return [
@@ -239,8 +245,13 @@ class Client extends DB {
             ];
     }
 
-    public function get($id, $fields = ['*']) {
-        if ($result = $this->select('clients', $fields, ['id' => $id]))
+    public function get($id = '', $fields = ['*']) {
+        if ($id == '')
+            $result = $this->select('clients', $fields);
+        else
+            $result = $this->select('clients', $fields, ['id' => $id]);
+
+        if ($result)
             return [
                 'result' => 'success',
                 'msg' => $result
@@ -249,6 +260,19 @@ class Client extends DB {
         return [
             'result' => 'fail',
             'msg' => 'Ошибка при поулчении заказа'
+        ];
+    }
+
+    public function save($id, $fields) {
+        if ($result = $this->update('clients', $fields, ['id' => $id]))
+            return [
+                'result' => 'success',
+                'msg' => $result
+            ];
+
+        return [
+            'result' => 'fail',
+            'msg' => 'Ошибка при записи клиента'
         ];
     }
 }
@@ -271,8 +295,13 @@ class Device extends DB {
             ];
     }
 
-    public function get($id, $fields = ['*']) {
-        if ($result = $this->select('devices', $fields, ['id' => $id]))
+    public function get($id = '', $fields = ['*'], $where = []) {
+        if (count($where) == 0)
+            $result = $this->select('devices', $fields, ['id' => $id]);
+        else
+            $result = $this->select('devices', $fields, $where);
+
+        if ($result)
             return [
                 'result' => 'success',
                 'msg' => $result
@@ -296,6 +325,58 @@ class User extends DB {
         return [
             'result' => 'fail',
             'msg' => 'Ошибка при поулчении заказа'
+        ];
+    }
+}
+
+class Executer extends DB {
+    public function add($fullName, $phone, $workType, $executorDesc) {
+        if ($insert_id = $this->insert('executers', [
+            'fullName' => $fullName,
+            'phone' => $phone,
+            'workType' => $workType,
+            'executorDesc' => $executorDesc,
+            'date' => time()
+        ]))
+            return [
+                'result' => 'success',
+                'msg' => $insert_id
+            ];
+        else //если ошибка при запросе
+            return [
+                'result' => 'fail',
+                'msg' => 'Ошибка при добавлении исполнителя'
+            ];
+    }
+
+    public function get($id = '', $fields = ['*']) {
+        if ($id == '')
+            $result = $this->select('executers', $fields);
+        else
+            $result = $this->select('executers', $fields, ['id' => $id]);
+
+        if ($result)
+            return [
+                'result' => 'success',
+                'msg' => $result
+            ];             
+
+        return [
+            'result' => 'fail',
+            'msg' => 'Ошибка при поулчении исполнителя/исполнителей'
+        ];
+    }
+
+    public function save($id, $fields) {
+        if ($result = $this->update('executers', $fields, ['id' => $id]))
+            return [
+                'result' => 'success',
+                'msg' => $result
+            ];
+
+        return [
+            'result' => 'fail',
+            'msg' => 'Ошибка при записи исполнителя'
         ];
     }
 }
@@ -341,4 +422,129 @@ function orderGet() {
     $result = $order->get(intval($_GET['id']));
     
     return $result['msg']->fetch_assoc();
+}
+
+if ($_GET['function'] == 'order.save')
+    echo json_encode(orderSave());
+
+function orderSave() {
+    $order = new Order();
+
+    $result = $order->get(intval($_GET['id']));
+    
+    return $result['msg']->fetch_assoc();
+}
+
+if ($_GET['function'] == 'executer.add')
+    echo json_encode(executerAdd());
+
+function executerAdd() {
+    $executer = new Executer();
+
+    return $executer->add(
+        $_GET['execiterFullName'],
+        $_GET['executerPhone'],
+        $_GET['workType'],
+        $_GET['executorDesc']
+    );
+}
+
+if ($_GET['function'] == 'executer.get')
+    echo json_encode(executerGet());
+
+function executerGet() {
+    $order = new Executer();
+
+    $result = $order->get(intval($_GET['id']));
+    
+    return $result['msg']->fetch_assoc();
+}
+
+if ($_GET['function'] == 'executer.save')
+    echo json_encode(executerSave());
+
+function executerSave() {
+    $executer = new Executer();
+
+    $result = $executer->save(intval($_GET['id']), [
+        'fullName' => $_GET['executerFullName'],
+        'phone' => $_GET['executerPhone'],
+        'workType' => $_GET['workType'],
+        'executerDesc' => $_GET['executerDesc'],
+    ]);
+
+    return $result['msg'];
+}
+
+if ($_GET['function'] == 'client.get')
+    echo json_encode(clientGet());
+
+function clientGet() {
+    $client = new Client();
+
+    $result = $client->get(intval($_GET['id']));
+    
+    return $result['msg']->fetch_assoc();
+}
+
+if ($_GET['function'] == 'client.save')
+    echo json_encode(clientSave());
+
+function clientSave() {
+    $client = new Client();
+
+    $result = $client->save(intval($_GET['id']), [
+        'fullName' => $_GET['clientFullName'],
+        'phone' => $_GET['clientPhone'],
+        'description' => $_GET['clientDesc']
+    ]);
+    
+    return $result['msg'];
+}
+
+if ($_GET['function'] == 'device.get')
+    echo json_encode(deviceGet());
+
+function deviceGet() {
+    $device = new Device();
+
+    $query = $device->get('', ['*'], [
+        'clientID' => $_GET['clientID']
+    ]);
+
+    $result = [];
+
+    while ($row = $query['msg']->fetch_assoc())
+        $result[] = $row;
+    
+    return $result;
+}
+
+if ($_GET['function'] == 'device.getByID')
+    echo json_encode(deviceGetByID());
+
+function deviceGetByID() {
+    $device = new Device();
+
+    $query = $device->get($_GET['deviceID']);
+
+    return $query['msg']->fetch_assoc();
+}
+
+if ($_GET['function'] == 'orders.getByClient')
+    echo json_encode(getByClient());
+
+function getByClient() {
+    $order = new Order();
+
+    $query = $order->get('', [
+        'client' => $_GET['clientID']
+    ]);
+
+    $result = [];
+
+    while ($row = $query['msg']->fetch_assoc())
+        $result[] = $row;
+    
+    return $result;
 }

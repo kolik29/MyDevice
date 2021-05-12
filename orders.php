@@ -65,11 +65,11 @@ include 'functions.php';
         <main>
             <div class="container">
                 <div class="d-flex justify-content-between mb-3">
-                    <button type="button" class="btn btn-success js-openModal" data-bs-toggle="modal" data-bs-target="#orderModal" data-change-modal="false">
+                    <button type="button" class="btn btn-success js-openOrderModal" data-bs-toggle="modal" data-bs-target="#orderModal" data-change-modal="false">
                         <i class="bi bi-plus"></i>
                         Добавить
                     </button>
-                    <div class="col-4">
+                    <!-- <div class="col-4">
                         <div class="input-group">
                             <input
                                 type="text"
@@ -81,7 +81,7 @@ include 'functions.php';
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <table class="w-100 table table-bordered">
                     <tr class="text-center">
@@ -98,13 +98,14 @@ include 'functions.php';
                     $user = new User();
                     $client = new Client();
                     $device = new Device();
+                    $executer = new Executer();
 
                     $result = $order->get()['msg'];
 
                     while($row = $result->fetch_assoc()):?>
                         <tr class="text-center">
                             <td class="align-middle">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#orderModal" data-change-modal="true" class="js-openModal">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#orderModal" data-change-modal="true" class="js-openOrderModal" data-orderId="<?=$row['id']?>" data-executerId="<?=$row['executer']?>" data-clientId="<?=$row['client']?>">
                                     <?= $row['id'] ?>
                                 </a>
                             </td>
@@ -131,9 +132,9 @@ include 'functions.php';
                             </td>
                             <td>
                                 <?php if ($row['createBy'] != NULL || $row['createBy'] != ''): ?>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#managerModal" data-userID="<?=$row['createBy']?>">
+                                    <!-- <a href="#" data-bs-toggle="modal" data-bs-target="#managerModal" data-userID="<?=$row['createBy']?>"> -->
                                         <?=$user->get($row['createBy'], ['fullName'])['msg']->fetch_assoc()['fullName'];?>
-                                    </a>
+                                    <!-- </a> -->
                                 <?php else: ?>
                                     Не указано
                                 <?php endif; ?>
@@ -147,18 +148,18 @@ include 'functions.php';
                             </td>
                             <td class="align-middle">
                                 <?php if ($row['executer'] != NULL || $row['executer'] != ''): ?>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#executerModal" data-execuerID="<?=$row['executer']?>">
-                                        <?=$user->get($row['executer'], ['fullName'])['msg']->fetch_assoc()['fullName'];?>
-                                    </a>
+                                    <!-- <a href="#" data-bs-toggle="modal" data-bs-target="#executerModal" data-execuerID="<?=$row['executer']?>"> -->
+                                        <?=$executer->get($row['executer'], ['fullName'])['msg']->fetch_assoc()['fullName'];?>
+                                    <!-- </a> -->
                                 <?php else: ?>
                                     Не указано
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($row['client'] != NULL || $row['client'] != ''): ?>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#clientModal" data-execuerID="<?=$row['client']?>">
+                                    <!-- <a href="#" class="js-openClientModal" data-bs-toggle="modal" data-bs-target="#clientModal" data-client-id="<?=$row['client']?>"> -->
                                         <?=$client->get($row['client'], ['fullName'])['msg']->fetch_assoc()['fullName'];?>
-                                    </a>
+                                    <!-- </a> -->
                                 <?php else: ?>
                                     Не указано
                                 <?php endif; ?>
@@ -225,9 +226,9 @@ include 'functions.php';
                                     name="clientDevice"
                                 />
                                 <datalist id="clientDeviceOptions">
-                                    <option value="15326478532156933">Samsung Galaxy A5</option>
+                                    <!-- <option value="15326478532156933">Samsung Galaxy A5</option>
                                     <option value="12365478521452612">Samsung Galaxy A6</option>
-                                    <option value="25632541789654122">Apple iPhone SE</option>
+                                    <option value="25632541789654122">Apple iPhone SE</option> -->
                                 </datalist>
                             </div>
                             <div class="col-6">
@@ -284,13 +285,13 @@ include 'functions.php';
                                     name="executor"
                                     placeholder="Иванов Иван Иванович"
                                 />
-                                <datalist id="executorOptions">
+                                <!-- <datalist id="executorOptions">
                                     <option value="Иванов Иван"></option>
                                     <option value="Петров Петр"></option>
                                     <option value="Петров Петр"></option>
                                     <option value="Дмитриев Дмитрий"></option>
                                     <option value="Прохоров Прохор"></option>
-                                </datalist>
+                                </datalist> -->
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -373,7 +374,7 @@ include 'functions.php';
                                     value="+7 (999) 876 54 32"
                                 />
                             </div>
-                            <div class="col-4">
+                            <!-- <div class="col-4">
                                 <label for="managerPass" class="form-label">Пароль</label>
                                 <div class="input-group js-pass">
                                     <input
@@ -388,9 +389,9 @@ include 'functions.php';
                                         <i class="bi bi-eye-fill"></i>
                                     </button>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <div class="col-12">
                                 <table class="table table-bordered">
                                     <tr class="text-center">
@@ -436,7 +437,7 @@ include 'functions.php';
                                     </tr>
                                 </table>
                             </div>
-                        </div>
+                        </div> -->
                     </form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Сохранить</button>
@@ -466,7 +467,6 @@ include 'functions.php';
                                     class="form-control"
                                     id="executerFullName"
                                     placeholder="Иванов Иван Иванович"
-                                    value="Никулина Ирина"
                                 />
                             </div>
                             <div class="col-4">
@@ -475,11 +475,10 @@ include 'functions.php';
                                     class="form-control js-phone"
                                     id="executerPhone"
                                     placeholder="+7 (999) 876 54 32"
-                                    value="+7 (999) 876 54 32"
                                     name="executerPhone"
                                 />
                             </div>
-                            <div class="col-4">
+                            <!-- <div class="col-4">
                                 <label for="executerPass" class="form-label">Пароль</label>
                                 <div class="input-group js-pass">
                                     <input
@@ -494,9 +493,9 @@ include 'functions.php';
                                         <i class="bi bi-eye-fill"></i>
                                     </button>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <div class="col-12">
                                 <table class="table table-bordered">
                                     <tr class="text-center">
@@ -543,7 +542,7 @@ include 'functions.php';
                                     </tr>
                                 </table>
                             </div>
-                        </div>
+                        </div> -->
                     </form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Сохранить</button>
@@ -554,21 +553,20 @@ include 'functions.php';
 
         <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
+                <form class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="clientModalLabel">Информация о клиенте</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form class="modal-body">
+                    <div class="modal-body">
                         <div class="row mb-3">
                             <div class="col-4">
                                 <label for="clientFullName" class="form-label">ФИО клиента</label>
                                 <input
                                     class="form-control"
                                     id="clientFullName"
-                                    placeholder="Иванов Иван Иванович"
-                                    value="Никулина Ирина"
                                     name="clientFullName"
+                                    placeholder="Иванов Иван Иванович"
                                 />
                             </div>
                             <div class="col-4">
@@ -576,9 +574,8 @@ include 'functions.php';
                                 <input
                                     class="form-control js-phone"
                                     id="clientPhone"
-                                    placeholder="+7 (999) 876 54 32"
-                                    value="+7 (999) 876 54 32"
                                     name="clientPhone"
+                                    placeholder="+7 (999) 876 54 32"
                                 />
                             </div>
                         </div>
@@ -587,9 +584,9 @@ include 'functions.php';
                                 <label for="clientDesc" class="form-label">Дополнительно</label>
                                 <textarea
                                     class="form-control"
-                                    placeholder="Любит брокколи"
                                     id="clientDesc"
                                     name="clientDesc"
+                                    placeholder="Любит брокколи"
                                 ></textarea>
                             </div>
                         </div>
@@ -599,12 +596,12 @@ include 'functions.php';
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link active"
-                                            id="home-tab"
+                                            id="clientDevices-tab"
                                             data-bs-toggle="tab"
-                                            data-bs-target="#home"
+                                            data-bs-target="#clientDevices"
                                             type="button"
                                             role="tab"
-                                            aria-controls="home"
+                                            aria-controls="clientDevices"
                                             aria-selected="true"
                                         >
                                             Устройства
@@ -613,24 +610,24 @@ include 'functions.php';
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link"
-                                            id="profile-tab"
+                                            id="clientOrders-tab"
                                             data-bs-toggle="tab"
-                                            data-bs-target="#profile"
+                                            data-bs-target="#clientOrders"
                                             type="button"
                                             role="tab"
-                                            aria-controls="profile"
+                                            aria-controls="clientOrders"
                                             aria-selected="false"
                                         >
                                             Заказы
                                         </button>
                                     </li>
                                 </ul>
-                                <div class="tab-content" id="myTabContent">
+                                <div class="tab-content">
                                     <div
                                         class="tab-pane fade show pt-3 active"
-                                        id="home"
+                                        id="clientDevices"
                                         role="tabpanel"
-                                        aria-labelledby="home-tab"
+                                        aria-labelledby="clientDevices-tab"
                                     >
                                         <table class="table table-bordered">
                                             <tr class="text-center">
@@ -645,9 +642,9 @@ include 'functions.php';
                                     </div>
                                     <div
                                         class="tab-pane fade pt-3"
-                                        id="profile"
+                                        id="clientOrders"
                                         role="tabpanel"
-                                        aria-labelledby="profile-tab"
+                                        aria-labelledby="clientOrders-tab"
                                     >
                                         <table class="table table-bordered">
                                             <tr class="text-center">
@@ -703,11 +700,11 @@ include 'functions.php';
                                 </div>
                             </div>
                         </div>
-                    </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Сохранить</button>
                     </div>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="js-clientBtn">Сохранить</button>
+                    </div>
+                </form>
             </div>
         </div>
     </body>

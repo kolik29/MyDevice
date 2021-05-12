@@ -3,6 +3,10 @@
 if ($_SESSION['user'] == '')
     header('Location: /');
 ?>
+
+<?php
+include 'functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -60,7 +64,11 @@ if ($_SESSION['user'] == '')
         <main>
             <div class="container">
                 <div class="d-flex justify-content-between mb-3">
-                    <div class="col-4 offset-8">
+                    <button type="button" class="btn btn-success js-openModal" data-bs-toggle="modal" data-bs-target="#executerModal" data-change-modal="false">
+                        <i class="bi bi-plus"></i>
+                        Добавить
+                    </button>
+                    <!-- <div class="col-4">
                         <div class="input-group">
                             <input
                                 type="text"
@@ -72,7 +80,7 @@ if ($_SESSION['user'] == '')
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <table class="w-100 table table-bordered">
                     <tr class="text-center">
@@ -82,17 +90,31 @@ if ($_SESSION['user'] == '')
                         <th class="py-2 bg-light text-dark">Работает</th>
                         <th class="py-2 bg-light text-dark">Дата приёма</th>
                     </tr>
+                    <?php
+                        $executers = new Executer();
+                        $result = $executers->get()['msg'];
+                    ?>
+                    <?php while($row = $result->fetch_assoc()): ?>
                     <tr class="text-center">
                         <td class="align-middle">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#executerModal">1</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#executerModal" data-executer-id="<?=$row['id']?>" class="js-openExecuterModal"><?=$row['id']?></a>
                         </td>
-                        <td class="align-middle">Иванов Пётр</td>
-                        <td class="align-middle">+7 (999) 123 45 56</td>
+                        <td class="align-middle"><?=$row['fullName']?></td>
+                        <td class="align-middle"><?=$row['phone']?></td>
                         <td class="align-middle">
-                            <div class="rounded bg-success text-white text-center">На постоянной основе</div>
+                            <?php if ($row['workType'] == 0): ?>
+                                <div class="rounded bg-success text-white text-center">На постоянной основе</div>
+                            <?php endif; ?>
+                            <?php if ($row['workType'] == 1): ?>
+                                <div class="rounded bg-primary text-white text-center">По совместительству</div>
+                            <?php endif; ?>
+                            <?php if ($row['workType'] == 2): ?>
+                                <div class="rounded bg-danger text-white text-center">Уволен</div>
+                            <?php endif; ?>
                         </td>
-                        <td>20.04.2021</td>
+                        <td><?=date('d.m.Y', intval($row['date']))?></td>
                     </tr>
+                    <?php endwhile; ?>
                 </table>
             </div>
         </main>
@@ -105,7 +127,7 @@ if ($_SESSION['user'] == '')
             aria-hidden="true"
         >
             <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
+                <form class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="executerModalLabel">Информация об исполнителе</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -113,21 +135,21 @@ if ($_SESSION['user'] == '')
                     <div class="modal-body">
                         <div class="row mb-3">
                             <div class="col-4">
-                                <label for="execiterFullName" class="form-label">ФИО</label>
+                                <label for="executerFullName" class="form-label">ФИО</label>
                                 <input
                                     class="form-control"
-                                    id="execiterFullName"
+                                    id="executerFullName"
+                                    name="executerFullName"
                                     placeholder="Иванов Иван Иванович"
-                                    value="Иванов Пётр Алексеевич"
                                 />
                             </div>
                             <div class="col-4">
-                                <label for="clientPhoneDataList" class="form-label">Номер телефона</label>
+                                <label for="executerPhone" class="form-label">Номер телефона</label>
                                 <input
                                     class="form-control js-phone"
-                                    id="clientPhoneDataList"
+                                    id="executerPhone"
+                                    name="executerPhone"
                                     placeholder="+7 (999) 876 54 32"
-                                    value="+7 (999) 123 45 56"
                                 />
                             </div>
                             <div class="col-4">
@@ -141,17 +163,15 @@ if ($_SESSION['user'] == '')
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="executorDesc" class="form-label">Дополнительно</label>
-                                <textarea class="form-control" placeholder="Любит брокколи" id="menegerDesc">
-Специализируется на Apple
-                                </textarea>
+                                <label for="executerDesc" class="form-label">Дополнительно</label>
+                                <textarea class="form-control" placeholder="Любит брокколи" id="executerDesc" name="executerDesc"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Добавить</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="js-executerBtn" data-action="add">Добавить</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </body>
