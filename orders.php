@@ -1,6 +1,6 @@
-<?php session_start(); ?>
+<?php if(!isset($_SESSION)) session_start(); ?>
 <?php
-if ($_SESSION['user'] == '')
+if (isset($_SESSION) && $_SESSION['user'] == '')
     header('Location: /');
 ?>
 
@@ -277,21 +277,20 @@ include 'functions.php';
                                 </div>
                             </div>
                             <div class="col-8">
-                                <label for="executorDataList" class="form-label">Исполнитель</label>
+                                <label for="executerDataList" class="form-label">Исполнитель</label>
                                 <input
                                     class="form-control"
-                                    list="executorOptions"
-                                    id="executorDataList"
-                                    name="executor"
+                                    list="executerOptions"
+                                    id="executerDataList"
+                                    name="executer"
                                     placeholder="Иванов Иван Иванович"
                                 />
-                                <!-- <datalist id="executorOptions">
-                                    <option value="Иванов Иван"></option>
-                                    <option value="Петров Петр"></option>
-                                    <option value="Петров Петр"></option>
-                                    <option value="Дмитриев Дмитрий"></option>
-                                    <option value="Прохоров Прохор"></option>
-                                </datalist> -->
+                                <datalist id="executerOptions">
+                                    <?php $executers = $executer->get(); ?>
+                                    <?php while ($row = $executers['msg']->fetch_assoc()): ?>
+                                        <option value="<?=$row['id']?>"><?=$row['fullName']?></option>
+                                    <?php endwhile; ?>
+                                </datalist>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -319,23 +318,23 @@ include 'functions.php';
                                 </select>
                             </div>
                             <div class="col-4">
-                                <label for="executorWorkFinish" class="form-label">Дата выполнения</label>
+                                <label for="executerWorkFinish" class="form-label">Дата выполнения</label>
                                 <input
                                     type="date"
                                     class="form-control"
-                                    id="executorWorkFinish"
-                                    name="executorWorkFinish"
+                                    id="executerWorkFinish"
+                                    name="executerWorkFinish"
                                 />
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="executorWorkDesc" class="form-label">Описание работы</label>
+                                <label for="executerWorkDesc" class="form-label">Описание работы</label>
                                 <textarea
                                     class="form-control"
                                     placeholder="Заменен модуль камеры"
-                                    id="executorWorkDesc"
-                                    name="executorWorkDesc"
+                                    id="executerWorkDesc"
+                                    name="executerWorkDesc"
                                 ></textarea>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
-<?php session_start(); ?>
+<?php if(!isset($_SESSION)) session_start(); ?>
 <?php
-if ($_SESSION['user'] == '')
+if (isset($_SESSION) && $_SESSION['user'] == '')
     header('Location: /');
 ?>
 

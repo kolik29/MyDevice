@@ -1,4 +1,4 @@
-<?php session_start();
+<?php if(!isset($_SESSION)) session_start();
 
 class DB {
     public function connectDB() {
@@ -104,12 +104,10 @@ class DB {
 
         $sql = 'INSERT INTO '.$table.' ('.implode(', ', $fields).') VALUES ('.implode(', ', $data).')';
 
-        // echo $sql;
-
         if ($conn->query($sql))
             return $conn->insert_id;
         else
-            throw new ErrorException('Ошибка запроса SELECT');
+            throw new ErrorException('Ошибка запроса INSERT: '.$sql);
 
         $conn->close();
     }
@@ -191,7 +189,7 @@ class Order extends DB {
             'preliminaryPrice' => $preliminaryPrice,
             'status' => $status,
             'dateCreate' => time(),
-            'createBy' => $this->getCurrentUserID()['msg']['id']
+            'createBy' => $this->getCurrentUserID()['msg']
         ]))
             return [
                 'result' => 'success',
@@ -330,12 +328,12 @@ class User extends DB {
 }
 
 class Executer extends DB {
-    public function add($fullName, $phone, $workType, $executorDesc) {
+    public function add($fullName, $phone, $workType, $executerDesc) {
         if ($insert_id = $this->insert('executers', [
             'fullName' => $fullName,
             'phone' => $phone,
             'workType' => $workType,
-            'executorDesc' => $executorDesc,
+            'executerDesc' => $executerDesc,
             'date' => time()
         ]))
             return [
@@ -383,15 +381,6 @@ class Executer extends DB {
 
 $db = new DB();
 
-if ($_GET['function'] == 'authentication')
-    echo json_encode($db->authentication($_GET['login'], $_GET['password']));
-
-if ($_GET['function'] == 'deauthentication')
-    echo json_encode($db->deauthentication());
-
-if ($_GET['function'] == 'order.add')
-    echo json_encode(orderAdd());
-
 function orderAdd() {
     $order = new Order();
     $client = new Client();
@@ -408,13 +397,10 @@ function orderAdd() {
         ],
         $_GET['clientDeviceDefectDesc'],
         $_GET['preliminaryPrice'],
-        1,
+        $_GET['executer'],
         $_GET['status']
     );
 }
-
-if ($_GET['function'] == 'order.get')
-    echo json_encode(orderGet());
 
 function orderGet() {
     $order = new Order();
@@ -424,9 +410,6 @@ function orderGet() {
     return $result['msg']->fetch_assoc();
 }
 
-if ($_GET['function'] == 'order.save')
-    echo json_encode(orderSave());
-
 function orderSave() {
     $order = new Order();
 
@@ -435,22 +418,16 @@ function orderSave() {
     return $result['msg']->fetch_assoc();
 }
 
-if ($_GET['function'] == 'executer.add')
-    echo json_encode(executerAdd());
-
 function executerAdd() {
     $executer = new Executer();
 
     return $executer->add(
-        $_GET['execiterFullName'],
+        $_GET['executerFullName'],
         $_GET['executerPhone'],
         $_GET['workType'],
-        $_GET['executorDesc']
+        $_GET['executerDesc']
     );
 }
-
-if ($_GET['function'] == 'executer.get')
-    echo json_encode(executerGet());
 
 function executerGet() {
     $order = new Executer();
@@ -459,9 +436,6 @@ function executerGet() {
     
     return $result['msg']->fetch_assoc();
 }
-
-if ($_GET['function'] == 'executer.save')
-    echo json_encode(executerSave());
 
 function executerSave() {
     $executer = new Executer();
@@ -476,9 +450,6 @@ function executerSave() {
     return $result['msg'];
 }
 
-if ($_GET['function'] == 'client.get')
-    echo json_encode(clientGet());
-
 function clientGet() {
     $client = new Client();
 
@@ -486,9 +457,6 @@ function clientGet() {
     
     return $result['msg']->fetch_assoc();
 }
-
-if ($_GET['function'] == 'client.save')
-    echo json_encode(clientSave());
 
 function clientSave() {
     $client = new Client();
@@ -501,9 +469,6 @@ function clientSave() {
     
     return $result['msg'];
 }
-
-if ($_GET['function'] == 'device.get')
-    echo json_encode(deviceGet());
 
 function deviceGet() {
     $device = new Device();
@@ -520,9 +485,6 @@ function deviceGet() {
     return $result;
 }
 
-if ($_GET['function'] == 'device.getByID')
-    echo json_encode(deviceGetByID());
-
 function deviceGetByID() {
     $device = new Device();
 
@@ -530,9 +492,6 @@ function deviceGetByID() {
 
     return $query['msg']->fetch_assoc();
 }
-
-if ($_GET['function'] == 'orders.getByClient')
-    echo json_encode(getByClient());
 
 function getByClient() {
     $order = new Order();
@@ -547,4 +506,45 @@ function getByClient() {
         $result[] = $row;
     
     return $result;
+}
+
+if (array_key_exists('function', $_GET)) {
+    if ($_GET['function'] == 'authentication')
+        echo json_encode($db->authentication($_GET['login'], $_GET['password']));
+
+    if ($_GET['function'] == 'deauthentication')
+        echo json_encode($db->deauthentication());
+
+    if ($_GET['function'] == 'order.add')
+        echo json_encode(orderAdd());
+
+    if ($_GET['function'] == 'order.get')
+        echo json_encode(orderGet());
+
+    if ($_GET['function'] == 'order.save')
+        echo json_encode(orderSave());
+
+    if ($_GET['function'] == 'executer.add')
+        echo json_encode(executerAdd());
+
+    if ($_GET['function'] == 'executer.get')
+        echo json_encode(executerGet());
+
+    if ($_GET['function'] == 'executer.save')
+        echo json_encode(executerSave());
+
+    if ($_GET['function'] == 'client.get')
+        echo json_encode(clientGet());
+
+    if ($_GET['function'] == 'client.save')
+        echo json_encode(clientSave());
+
+    if ($_GET['function'] == 'device.get')
+        echo json_encode(deviceGet());
+
+    if ($_GET['function'] == 'device.getByID')
+        echo json_encode(deviceGetByID());
+
+    if ($_GET['function'] == 'orders.getByClient')
+        echo json_encode(getByClient());
 }
