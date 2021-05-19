@@ -1,7 +1,8 @@
-<?php session_start(); ?>
+<?php if(!isset($_SESSION)) session_start(); ?>
 <?php
-if ($_SESSION['user'] != '')
-    header('Location: orders.php');
+if (array_key_exists('user', $_SESSION))
+    if ($_SESSION['user'] != '')
+        header('Location: orders.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">

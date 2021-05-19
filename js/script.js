@@ -31,7 +31,7 @@ $(() => {
 
     $('#js-orderBtn').on('click', function () {
         if ($(this).data('action') == 'add')
-            $.get('functions.php?function=order.add&' + $(this).closest('form').serialize(), function (data) {
+            $.get('functions.php?function=order.add&' + $(this).closest('form').serialize(), (data) => {
                 data = JSON.parse(data);
 
                 if (data.result == 'fail') console.log(data);
@@ -87,13 +87,11 @@ $(() => {
             $.get('functions.php?function=order.get&id=' + parseInt($(this).text()), function (data) {
                 data = JSON.parse(data);
 
-                console.log(data);
-
                 $('#clientDeviceDesc').val(data.deviceDesc);
                 $('#clientDeviceDefectDesc').val(data.deviceDefect);
                 $('#preliminaryPrice').val(data.preliminaryPrice);
                 $('#orderStatus').val(data.status);
-                $('#executorWorkFinish').val(data.dateFinish);
+                $('#executerWorkFinish').val(data.dateFinish);
 
                 $.get('functions.php?function=client.get&id=' + parseInt(data.client), (dataClient) => {
                     dataClient = JSON.parse(dataClient);
@@ -109,12 +107,10 @@ $(() => {
                     $('#orderModal #clientDeviceSN').val(dataDevice.number);
                 });
 
-                console.log(data.executer);
-
                 $.get('functions.php?function=executer.get&id=' + parseInt(data.executer), (dataExecuter) => {
                     dataExecuter = JSON.parse(dataExecuter);
 
-                    $('#orderModal #executorDataList').val(dataExecuter.fullName);
+                    $('#orderModal #executerDataList').val(dataExecuter.fullName);
                 });
             });
         } else {
@@ -130,7 +126,7 @@ $(() => {
             $('#executerFullName').val(data.fullName);
             $('#executerPhone').val(data.phone);
             $('#workType').val(data.workType);
-            $('#executorDesc').val(data.executorDesc);
+            $('#executerDesc').val(data.executerDesc);
 
             $('#js-executerBtn').data('action', 'save').data('executer-id', $(this).text()).text('Сохранить');
         });
@@ -241,10 +237,12 @@ $(() => {
 function clearModal(id) {
     var orderModal = document.getElementById(id);
     orderModal.addEventListener('hide.bs.modal', function () {
-        $('#' + id + ' input, #' + id + ' textarea').val('');
-        $('#' + id + ' .btn')
-            .text('Добавить')
-            .data('action', 'add');
+        setTimeout(() => {
+            $('#' + id + ' input, #' + id + ' textarea').val('');
+            $('#' + id + ' .btn')
+                .text('Добавить')
+                .data('action', 'add');
+        }, 100);
     });
 }
 
